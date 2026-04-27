@@ -1,42 +1,91 @@
-import { useState } from 'react';
-import axios from 'axios';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Inscription from './pages/Inscription';
+import Login from './pages/Login';
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
 
 function App() {
-    const [formData, setFormData] = useState({
-        nom: '',
-        tel: '',
-        email: '',
-        mdp: '',
-        role: '1'
-    });
+    const user = JSON.parse(localStorage.getItem('user'));
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={user ? <Dashboard user={user} /> : <Navigate to="/login" />} />
+                <Route path="/inscription" element={<Inscription />} />
+                <Route path="/login" element={<Login />} />
+            </Routes>
+        </Router>
+    );
+}
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const res = await axios.post('http://127.0.0.1:8000/api/user/add', formData);            alert(res.data.message);
-        } catch (err) {
-            alert("Erreur lors de l'envoi");
-        }
+const Dashboard = ({ user }) => {
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        window.location.href = "/login";
     };
 
     return (
-        <div style={{ padding: '30px', fontFamily: 'sans-serif' }}>
-            <h2>AgriTrack - Inscription Utilisateur</h2>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '300px' }}>
-                <input name="nom" placeholder="Nom complet" onChange={handleChange} required />
-                <input name="tel" placeholder="Téléphone" onChange={handleChange} required />
-                <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
-                <input name="mdp" type="password" placeholder="Mot de passe" onChange={handleChange} required />
-                <button type="submit" style={{ backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px' }}>
-                    Créer l'utilisateur
-                </button>
-            </form>
+        <div style={dashStyles.container}>
+            <header style={dashStyles.header}>
+                <h1 style={dashStyles.logo}>AgriTrack</h1>
+                <button onClick={handleLogout} style={dashStyles.logoutBtn}>Déconnexion</button>
+            </header>
+
+            <div style={dashStyles.welcome}>
+                <h2 style={dashStyles.userName}>Bonjour, {user.nom} 👋</h2>
+                <p style={dashStyles.userRole}>{user.role === 'ROLE_ADMIN' ? 'Propriétaire' : 'Superviseur'}</p>
+            </div>
+
+            <div style={dashStyles.grid}>
+                <div style={dashStyles.card}>🌾<br/>Parcelles</div>
+                <div style={dashStyles.card}>🚜<br/>Campagnes</div>
+            </div>
+
+            {user.role === 'ROLE_ADMIN' && (
+                <div style={dashStyles.adminPanel}>
+                    <p style={{marginBottom: '15px', fontWeight: '500', color: '#333'}}>Gestion de l'exploitation</p>
+                    <a
+                        href="http://127.0.0.1:8000/admin"
+                        style={dashStyles.adminBtn}
+                    >
+                        ⚙️ Panneau Administration
+                    </a>
+                </div>
+            )}
         </div>
     );
-}
+};
+
+const dashStyles = {
+    container: { padding: '15px', fontFamily: 'sans-serif', backgroundColor: '#f4f7f6', minHeight: '100vh' },
+    header: {
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        backgroundColor: '#2e7d32', padding: '15px', borderRadius: '12px', color: 'white'
+    },
+    logo: { fontSize: '20px', margin: 0 },
+    logoutBtn: { backgroundColor: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '8px', fontSize: '13px' },
+    welcome: { margin: '25px 5px' },
+    userName: { fontSize: '22px', margin: '0 0 5px 0' },
+    userRole: { color: '#666', fontSize: '14px', margin: 0 },
+    grid: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', // Mobile-friendly grid
+        gap: '15px', marginBottom: '30px'
+    },
+    card: {
+        padding: '25px 10px', background: 'white', borderRadius: '15px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.05)', textAlign: 'center',
+        fontSize: '16px', fontWeight: 'bold', color: '#2e7d32'
+    },
+    adminPanel: {
+        padding: '20px', backgroundColor: 'white', borderRadius: '15px',
+        textAlign: 'center', border: '2px dashed #2e7d32'
+    },
+    adminBtn: {
+        display: 'block', padding: '15px', backgroundColor: '#2e7d32',
+        color: 'white', textDecoration: 'none', borderRadius: '10px', fontWeight: 'bold'
+    }
+};
 
 export default App;
