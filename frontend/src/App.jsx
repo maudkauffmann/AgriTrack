@@ -1,27 +1,27 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Inscription from './pages/Inscription';
 import Login from './pages/Login';
-import axios from "axios";
-
-axios.defaults.withCredentials = true;
 
 function App() {
-    const user = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem('token');
+    const isAuthenticated = token && token !== "undefined";
 
     return (
         <Router>
             <Routes>
-                <Route path="/" element={user ? <Dashboard user={user} /> : <Navigate to="/login" />} />
-                <Route path="/inscription" element={<Inscription />} />
                 <Route path="/login" element={<Login />} />
+                <Route
+                    path="/"
+                    element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
+                />
             </Routes>
         </Router>
     );
 }
 
-const Dashboard = ({ user }) => {
+const Dashboard = () => {
     const handleLogout = () => {
-        localStorage.removeItem('user');
+        // On nettoie le token pour se déconnecter
+        localStorage.removeItem('token');
         window.location.href = "/login";
     };
 
@@ -33,8 +33,8 @@ const Dashboard = ({ user }) => {
             </header>
 
             <div style={dashStyles.welcome}>
-                <h2 style={dashStyles.userName}>Bonjour, {user.nom} 👋</h2>
-                <p style={dashStyles.userRole}>{user.role === 'ROLE_ADMIN' ? 'Propriétaire' : 'Superviseur'}</p>
+                <h2 style={dashStyles.userName}>Bienvenue sur votre exploitation 👋</h2>
+                <p style={dashStyles.userRole}>Session sécurisée par JWT</p>
             </div>
 
             <div style={dashStyles.grid}>
@@ -42,17 +42,15 @@ const Dashboard = ({ user }) => {
                 <div style={dashStyles.card}>🚜<br/>Campagnes</div>
             </div>
 
-            {user.role === 'ROLE_ADMIN' && (
-                <div style={dashStyles.adminPanel}>
-                    <p style={{marginBottom: '15px', fontWeight: '500', color: '#333'}}>Gestion de l'exploitation</p>
-                    <a
-                        href="http://127.0.0.1:8000/admin"
-                        style={dashStyles.adminBtn}
-                    >
-                        ⚙️ Panneau Administration
-                    </a>
-                </div>
-            )}
+            <div style={dashStyles.adminPanel}>
+                <p style={{marginBottom: '15px', fontWeight: '500', color: '#333'}}>Gestion de l'exploitation</p>
+                <a
+                    href="http://127.0.0.1:8000/admin"
+                    style={dashStyles.adminBtn}
+                >
+                    ⚙️ Panneau Administration
+                </a>
+            </div>
         </div>
     );
 };
@@ -64,13 +62,13 @@ const dashStyles = {
         backgroundColor: '#2e7d32', padding: '15px', borderRadius: '12px', color: 'white'
     },
     logo: { fontSize: '20px', margin: 0 },
-    logoutBtn: { backgroundColor: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '8px', fontSize: '13px' },
+    logoutBtn: { backgroundColor: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '8px', fontSize: '13px', cursor: 'pointer' },
     welcome: { margin: '25px 5px' },
     userName: { fontSize: '22px', margin: '0 0 5px 0' },
     userRole: { color: '#666', fontSize: '14px', margin: 0 },
     grid: {
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', // Mobile-friendly grid
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
         gap: '15px', marginBottom: '30px'
     },
     card: {

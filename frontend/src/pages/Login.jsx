@@ -17,17 +17,23 @@ const Login = () => {
         e.preventDefault();
         try {
             const apiUrl = import.meta.env.VITE_API_URL;
-            console.log("Mon API est ici :", apiUrl);
+
+            // On s'assure qu'on utilise bien les credentials pour le cookie
             const res = await axios.post(`${apiUrl}/api/login`, {
-                telUtilisateur: credentials.telUtilisateur, // On envoie le nom attendu par Symfony
-                password: credentials.password      // On envoie le nom attendu par Symfony
+                telUtilisateur: credentials.telUtilisateur,
+                password: credentials.password
+            }, {
+                withCredentials: true
             });
 
-            localStorage.setItem('user', JSON.stringify(res.data.user));
-            alert("Ravi de vous revoir, " + res.data.user.nom);
-            window.location.href = "/";
+            if (res.data.token) {
+                localStorage.setItem('token', res.data.token);
+                console.log("Connexion réussie ! Vérifie l'onglet Application > Cookies.");
+                window.location.href = "/";
+            }
         } catch (err) {
-            alert(err.response?.data?.message || "Erreur de connexion");
+            console.error("Erreur détaillée :", err);
+            alert("Erreur de connexion : " + (err.response?.data?.message || "Vérifiez l'URL de l'API (HTTP vs HTTPS)"));
         }
     };
 
@@ -35,13 +41,12 @@ const Login = () => {
         <div style={styles.container}>
             <div style={styles.card}>
                 <h2 style={styles.title}>AgriTrack</h2>
-                <p style={styles.subtitle}>Connexion par téléphone</p>
-
+                <p style={styles.subtitle}>Connexion sécurisée</p>
                 <form onSubmit={handleLogin} style={styles.form}>
                     <input
                         name="telUtilisateur"
-                        type="tel" // "tel" ouvre le clavier numérique sur mobile
-                        placeholder="Numéro de téléphone"
+                        type="tel"
+                        placeholder="Téléphone"
                         onChange={handleChange}
                         style={styles.input}
                         required
@@ -54,13 +59,10 @@ const Login = () => {
                         style={styles.input}
                         required
                     />
-
                     <button type="submit" style={styles.button}>Se connecter</button>
                 </form>
-
                 <div style={styles.footer}>
-                    <p style={{margin: '0 0 10px 0'}}>Nouveau sur AgriTrack ?</p>
-                    <Link to="/inscription" style={styles.link}>Créer un compte Admin</Link>
+                    <Link to="/inscription" style={styles.link}>Créer un compte</Link>
                 </div>
             </div>
         </div>
@@ -68,72 +70,15 @@ const Login = () => {
 };
 
 const styles = {
-    container: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        backgroundColor: '#f4f7f6',
-        fontFamily: 'sans-serif',
-        padding: '20px'
-    },
-    card: {
-        backgroundColor: 'white',
-        padding: '40px 25px',
-        borderRadius: '15px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-        width: '100%',
-        maxWidth: '400px'
-    },
-    title: {
-        color: '#2e7d32',
-        textAlign: 'center',
-        marginBottom: '5px',
-        fontSize: '28px'
-    },
-    subtitle: {
-        textAlign: 'center',
-        color: '#666',
-        fontSize: '15px',
-        marginBottom: '30px'
-    },
-    form: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '15px'
-    },
-    input: {
-        padding: '16px',
-        borderRadius: '10px',
-        border: '1px solid #ddd',
-        fontSize: '16px',
-        backgroundColor: '#fafafa',
-        outline: 'none'
-    },
-    button: {
-        backgroundColor: '#2e7d32',
-        color: 'white',
-        border: 'none',
-        padding: '16px',
-        borderRadius: '10px',
-        fontSize: '16px',
-        fontWeight: 'bold',
-        cursor: 'pointer',
-        marginTop: '10px',
-        boxShadow: '0 4px 6px rgba(46, 125, 50, 0.2)'
-    },
-    footer: {
-        marginTop: '30px',
-        textAlign: 'center',
-        fontSize: '14px',
-        color: '#666'
-    },
-    link: {
-        color: '#2e7d32',
-        textDecoration: 'none',
-        fontWeight: 'bold',
-        fontSize: '15px'
-    }
+    container: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f4f7f6', fontFamily: 'sans-serif' },
+    card: { backgroundColor: 'white', padding: '40px', borderRadius: '15px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', width: '100%', maxWidth: '400px' },
+    title: { color: '#2e7d32', textAlign: 'center', marginBottom: '10px' },
+    subtitle: { textAlign: 'center', color: '#666', marginBottom: '30px' },
+    form: { display: 'flex', flexDirection: 'column', gap: '15px' },
+    input: { padding: '15px', borderRadius: '10px', border: '1px solid #ddd', fontSize: '16px' },
+    button: { backgroundColor: '#2e7d32', color: 'white', border: 'none', padding: '15px', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' },
+    footer: { marginTop: '20px', textAlign: 'center' },
+    link: { color: '#2e7d32', textDecoration: 'none', fontWeight: 'bold' }
 };
 
 export default Login;
