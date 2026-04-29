@@ -5,8 +5,8 @@ import { useNavigate, Link } from 'react-router-dom';
 const Login = () => {
     const navigate = useNavigate();
     const [credentials, setCredentials] = useState({
-        tel: '',
-        mdp: ''
+        telUtilisateur: '',
+        password: ''
     });
 
     const handleChange = (e) => {
@@ -16,7 +16,13 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://127.0.0.1:8000/api/login', credentials);
+            const apiUrl = import.meta.env.VITE_API_URL;
+            console.log("Mon API est ici :", apiUrl);
+            const res = await axios.post(`${apiUrl}/api/login`, {
+                telUtilisateur: credentials.telUtilisateur, // On envoie le nom attendu par Symfony
+                password: credentials.password      // On envoie le nom attendu par Symfony
+            });
+
             localStorage.setItem('user', JSON.stringify(res.data.user));
             alert("Ravi de vous revoir, " + res.data.user.nom);
             window.location.href = "/";
@@ -33,7 +39,7 @@ const Login = () => {
 
                 <form onSubmit={handleLogin} style={styles.form}>
                     <input
-                        name="tel"
+                        name="telUtilisateur"
                         type="tel" // "tel" ouvre le clavier numérique sur mobile
                         placeholder="Numéro de téléphone"
                         onChange={handleChange}
@@ -41,7 +47,7 @@ const Login = () => {
                         required
                     />
                     <input
-                        name="mdp"
+                        name="password"
                         type="password"
                         placeholder="Mot de passe"
                         onChange={handleChange}
