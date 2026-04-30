@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\RoleUtilisateur;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,45 +11,50 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
-final class ApiUserController extends AbstractController
+#[Route('/api', name: 'api_')]
+class ApiUserController extends AbstractController
 {
-    #[Route('/api/user/add', name: 'api_user_add', methods: ['POST'])]
-    public function add(
-        Request $request,
-        EntityManagerInterface $em,
-        UserPasswordHasherInterface $passwordHasher
-    ): JsonResponse {
+    #[Route('/user/add', name: 'user_add', methods: ['POST'])]
+    public function add(Request $request, UserPasswordHasherInterface $hasher, EntityManagerInterface $em): JsonResponse
+    {
         $data = json_decode($request->getContent(), true);
-
-        if (!$data || empty($data['mdp'])) {
-            return new JsonResponse(['message' => 'Mot de passe manquant'], 400);
+        if (!$data) {
+            return new JsonResponse(['message' => 'Données JSON invalides'], 400);
         }
 
-        $user = new Utilisateur();
-        $user->setNomUtilisateur($data['nom'] ?? 'Anonyme');
-        $user->setEmail($data['email'] ?? '');
-        $user->setTelUtilisateur((string)($data['tel'] ?? '0'));
-        $user->setIdRole((string)($data['role'] ?? '1'));
-
-        $hashedPassword = $passwordHasher->hashPassword(
-            $user,
-            $data['mdp']
-        );
-        $user->setMdp($hashedPassword);
-
         try {
+            $user = new Utilisateur();
+            $user->setNomUtilisateur($data['nom'] ?? '');
+            $user->setEmail($data['email'] ?? '');
+            $tel = preg_replace('/[^0-9]/', '', $data['tel'] ?? '');
+            $user->setTelUtilisateur($tel);
+            $user->setPassword($hasher->hashPassword($user, $data['mdp'] ?? ''));
+
+            $roleRepo = $em->getRepository(RoleUtilisateur::class);
+            $typeDemande = $data['roleType'] ?? 'SUPERVISEUR';
+
+            $role = $roleRepo->findOneBy(['nomRoleUser' => $typeDemande]);
+
+            if (!$role) {
+                return new JsonResponse(['message' => "Le rôle $typeDemande n'existe pas en base."], 400);
+            }
+
+            $user->setIdRole($role);
             $em->persist($user);
             $em->flush();
 
             return new JsonResponse([
                 'status' => 'success',
-                'message' => 'Utilisateur créé avec succès !'
+                'user' => [
+                    'nom' => $user->getNomUtilisateur(),
+                    'role' => $role->getNomRoleUser()
+                ]
             ], 201);
 
         } catch (\Exception $e) {
             return new JsonResponse([
                 'status' => 'error',
-                'message' => utf8_encode($e->getMessage())
+                'message' => 'Erreur : ' . $e->getMessage()
             ], 500);
         }
     }

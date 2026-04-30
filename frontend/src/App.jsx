@@ -20,7 +20,6 @@ function App() {
 
 const Dashboard = () => {
     const handleLogout = () => {
-        // On nettoie le token pour se déconnecter
         localStorage.removeItem('token');
         window.location.href = "/login";
     };

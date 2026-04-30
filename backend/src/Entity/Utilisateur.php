@@ -6,45 +6,53 @@ use App\Repository\UtilisateurRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
-#[ORM\Table(name: 'Utilisateur')]
-class Utilisateur implements PasswordAuthenticatedUserInterface
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_TEL_UTILISATEUR', fields: ['telUtilisateur'])]
+#[ORM\Table(name: "Utilisateur")]
+class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id_utilisateur', type: Types::BIGINT)]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    #[ORM\Column(name: "id_utilisateur", type: Types::BIGINT)]
     private ?string $id_utilisateur = null;
 
-    #[ORM\Column(name: 'id_role', type: Types::BIGINT)]
-    private ?string $id_role = null;
+    #[ORM\ManyToOne(targetEntity: RoleUtilisateur::class)]
+    #[ORM\JoinColumn(name: "id_role", referencedColumnName: "id_role", nullable: false)]
+    private ?RoleUtilisateur $id_role = null;
 
-    #[ORM\Column(name: 'nomUtilisateur', length: 30)]
+    #[ORM\Column(name: "nomUtilisateur", length: 30)]
     private ?string $nomUtilisateur = null;
 
-    #[ORM\Column(name: 'telUtilisateur', type: Types::BIGINT)]
+    #[ORM\Column(name: "telUtilisateur")]
     private ?string $telUtilisateur = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 50)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $mdp = null;
+    #[ORM\Column(name: "password", length: 255)]
+    private ?string $password = null;
 
-    public function getIdUtilisateur(): ?string
+    /**
+     * @var list<string> Les rôles pour la sécurité Symfony
+     */
+    private array $roles = [];
+
+
+    public function getId(): ?string
     {
         return $this->id_utilisateur;
     }
 
-    public function getIdRole(): ?string
+    public function setId(?string $id): void
     {
-        return $this->id_role;
+        $this->id_utilisateur = $id;
     }
 
-    public function setIdRole(string $id_role): static
+    public function getIdUtilisateur(): ?string
     {
-        $this->id_role = $id_role;
-        return $this;
+        return $this->id_utilisateur;
     }
 
     public function getNomUtilisateur(): ?string
@@ -55,17 +63,6 @@ class Utilisateur implements PasswordAuthenticatedUserInterface
     public function setNomUtilisateur(string $nomUtilisateur): static
     {
         $this->nomUtilisateur = $nomUtilisateur;
-        return $this;
-    }
-
-    public function getTelUtilisateur(): ?string
-    {
-        return $this->telUtilisateur;
-    }
-
-    public function setTelUtilisateur(string $telUtilisateur): static
-    {
-        $this->telUtilisateur = $telUtilisateur;
         return $this;
     }
 
@@ -80,19 +77,84 @@ class Utilisateur implements PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getMdp(): ?string
+    public function getTelUtilisateur(): ?string
     {
-        return $this->mdp;
+        return $this->telUtilisateur;
     }
 
-    public function getPassword(): string
+    public function setTelUtilisateur(string $telUtilisateur): static
     {
-        return $this->mdp;
-    }
-
-    public function setMdp(string $mdp): static
-    {
-        $this->mdp = $mdp;
+        $this->telUtilisateur = $telUtilisateur;
         return $this;
+    }
+
+    public function getIdRole(): ?RoleUtilisateur
+    {
+        return $this->id_role;
+    }
+
+    public function setIdRole(?RoleUtilisateur $id_role): static
+    {
+        $this->id_role = $id_role;
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->telUtilisateur;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+
+        if ($this->id_role) {
+            $roles[] = $this->id_role->getNomRoleUser();
+        }
+
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+    }
+
+    public function __serialize(): array
+    {
+        return [
+            'id' => $this->id_utilisateur,
+            'tel' => $this->telUtilisateur,
+        ];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->id_utilisateur = $data['id'] ?? null;
+        $this->telUtilisateur = $data['tel'] ?? null;
     }
 }

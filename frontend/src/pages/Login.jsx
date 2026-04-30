@@ -17,8 +17,6 @@ const Login = () => {
         e.preventDefault();
         try {
             const apiUrl = import.meta.env.VITE_API_URL;
-
-            // On s'assure qu'on utilise bien les credentials pour le cookie
             const res = await axios.post(`${apiUrl}/api/login`, {
                 telUtilisateur: credentials.telUtilisateur,
                 password: credentials.password
