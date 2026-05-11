@@ -75,4 +75,8 @@ class Parcelle
 
         return $this;
     }
+
+    public function __toString(): string {
+        return $this->nomParcelle ?? 'Parcelle sans nom';
+    }
 }

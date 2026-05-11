@@ -11,10 +11,10 @@ class TypeCulture
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::BIGINT)]
+    #[ORM\Column(name: "id_tp_culture", type: Types::BIGINT)]
     private ?string $id_tp_culture = null;
 
-    #[ORM\Column(length: 30)]
+    #[ORM\Column(name: "nomTpCulture", length: 30)]
     private ?string $nomTpCulture = null;
 
     public function getId(): ?string
@@ -39,5 +39,10 @@ class TypeCulture
         $this->nomTpCulture = $nomTpCulture;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->nomTpCulture ?? 'Type inconnu';
     }
 }

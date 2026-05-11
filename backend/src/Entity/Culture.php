@@ -10,17 +10,15 @@ use Doctrine\ORM\Mapping as ORM;
 class Culture
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::BIGINT)]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    #[ORM\Column(name: "id_culture", type: Types::BIGINT)]
     private ?string $id_culture = null;
 
-    #[ORM\Column(type: Types::BIGINT)]
-    private ?string $id_tp_culture = null;
+    #[ORM\ManyToOne(targetEntity: TypeCulture::class)]
+    #[ORM\JoinColumn(name: "id_tp_culture", referencedColumnName: "id_tp_culture", nullable: false)]
+    private ?TypeCulture $id_tp_culture = null;
 
-    #[ORM\Column(type: Types::BIGINT)]
-    private ?string $id_campagne = null;
-
-    #[ORM\Column(length: 30)]
+    #[ORM\Column(name: "nomCulture", length: 30)]
     private ?string $nomCulture = null;
 
     public function getId(): ?string
@@ -35,28 +33,21 @@ class Culture
         return $this;
     }
 
-    public function getIdTpCulture(): ?string
+    public function getIdTpCulture(): ?TypeCulture
     {
         return $this->id_tp_culture;
     }
 
-    public function setIdTpCulture(string $id_tp_culture): static
+    public function setIdTpCulture(?TypeCulture $id_tp_culture): static
     {
         $this->id_tp_culture = $id_tp_culture;
 
         return $this;
     }
 
-    public function getIdCampagne(): ?string
+    public function getIdCulture(): ?string
     {
-        return $this->id_campagne;
-    }
-
-    public function setIdCampagne(string $id_campagne): static
-    {
-        $this->id_campagne = $id_campagne;
-
-        return $this;
+        return $this->id_culture;
     }
 
     public function getNomCulture(): ?string
@@ -69,5 +60,10 @@ class Culture
         $this->nomCulture = $nomCulture;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->nomCulture ?? 'Nouvelle Culture';
     }
 }

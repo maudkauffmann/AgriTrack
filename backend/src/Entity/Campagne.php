@@ -10,20 +10,25 @@ use Doctrine\ORM\Mapping as ORM;
 class Campagne
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::BIGINT)]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    #[ORM\Column(name: "id_campagne", type: Types::BIGINT)]
     private ?string $id_campagne = null;
 
-    #[ORM\Column(type: Types::BIGINT)]
-    private ?string $id_parcelle = null;
+    #[ORM\ManyToOne(targetEntity: Parcelle::class)]
+    #[ORM\JoinColumn(name: "id_parcelle", referencedColumnName: "id_parcelle", nullable: false)]
+    private ?Parcelle $id_parcelle = null;
 
-    #[ORM\Column(length: 30)]
+    #[ORM\ManyToOne(targetEntity: Culture::class)]
+    #[ORM\JoinColumn(name: "id_culture", referencedColumnName: "id_culture", nullable: false)]
+    private ?Culture $id_culture = null;
+
+    #[ORM\Column(name: "nomCampagne", length: 30)]
     private ?string $nomCampagne = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(name: "dateDebut", type: Types::DATE_MUTABLE)]
     private ?\DateTime $dateDeb = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(name: "dateFin", type: Types::DATE_MUTABLE)]
     private ?\DateTime $dateFin = null;
 
     public function getId(): ?string
@@ -31,22 +36,30 @@ class Campagne
         return $this->id_campagne;
     }
 
-    public function setId(string $id_campagne): static
+    public function getIdCampagne(): ?string
     {
-        $this->id_campagne = $id_campagne;
-
-        return $this;
+        return $this->id_campagne;
     }
 
-    public function getIdParcelle(): ?string
+    public function getIdParcelle(): ?Parcelle
     {
         return $this->id_parcelle;
     }
 
-    public function setIdParcelle(string $id_parcelle): static
+    public function setIdParcelle(?Parcelle $parcelle): static
     {
-        $this->id_parcelle = $id_parcelle;
+        $this->id_parcelle = $parcelle;
+        return $this;
+    }
 
+    public function getIdCulture(): ?Culture
+    {
+        return $this->id_culture;
+    }
+
+    public function setIdCulture(?Culture $culture): static
+    {
+        $this->id_culture = $culture;
         return $this;
     }
 
