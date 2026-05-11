@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
+import Inscription from "./pages/Inscription.jsx";
 
 function App() {
     const token = localStorage.getItem('token');
@@ -8,6 +9,7 @@ function App() {
     return (
         <Router>
             <Routes>
+                <Route path="/inscription" element={<Inscription />} />
                 <Route path="/login" element={<Login />} />
                 <Route
                     path="/"

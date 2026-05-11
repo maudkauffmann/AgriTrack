@@ -56,7 +56,6 @@ class PlantationCrudController extends AbstractCrudController
                 return $this->container->get(AdminUrlGenerator::class)
                     ->setController(ParcelleCrudController::class)
                     ->setAction(Action::INDEX)
-                    // Syntaxe explicite pour forcer le filtrage sur l'entité liée
                     ->set('filters[id_plantation][value]', $plantation->getId())
                     ->set('filters[id_plantation][comparison]', '=')
                     ->generateUrl();
@@ -92,12 +91,8 @@ class PlantationCrudController extends AbstractCrudController
             IdField::new('id', 'ID')->hideOnForm(),
             TextField::new('nomPlantation', 'Nom de la plantation'),
             TextField::new('ville', 'Ville / Localité'),
-
-            // Affichage des coordonnées uniquement sur la fiche DETAIL ou le formulaire
             NumberField::new('longitude')->setColumns('col-6')->hideOnIndex(),
             NumberField::new('latitude')->setColumns('col-6')->hideOnIndex(),
-
-            // Indications masquées dans la liste pour plus de lisibilité
             TextareaField::new('indications', 'Indications pour trouver le terrain')
                 ->hideOnIndex()
                 ->setFormTypeOptions(['attr' => ['rows' => 4]]),

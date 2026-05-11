@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ParcelleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -23,6 +25,14 @@ class Parcelle
 
     #[ORM\Column(name: "superficieParc")]
     private ?float $superficieParc = null;
+
+    #[ORM\OneToMany(targetEntity: Campagne::class, mappedBy: 'id_parcelle')]
+    private Collection $campagnes;
+
+    public function __construct()
+    {
+        $this->campagnes = new ArrayCollection();
+    }
 
     public function getId(): ?string
     {
@@ -76,7 +86,42 @@ class Parcelle
         return $this;
     }
 
+    public function getCampagnes(): Collection
+    {
+        return $this->campagnes;
+    }
+
     public function __toString(): string {
         return $this->nomParcelle ?? 'Parcelle sans nom';
+    }
+
+    public function getNbCampagnes(): int
+    {
+        return $this->campagnes->count();
+    }
+
+    public function getCulturesActuelles(): string
+    {
+        $actuel = new \DateTime();
+        $listeCultures = "";
+
+        foreach ($this->campagnes as $campagne) {
+            if ($campagne->getDateDeb() <= $actuel &&
+                ($campagne->getDateFin() === null || $campagne->getDateFin() >= $actuel)) {
+
+                $nom = $campagne->getIdCulture()->getNomCulture();
+                if ($listeCultures == "") {
+                    $listeCultures = $nom;
+                } else {
+                    $listeCultures = $listeCultures . ", " . $nom;
+                }
+            }
+        }
+
+        if ($listeCultures == "") {
+            return "Aucune culture en cours";
+        }
+
+        return $listeCultures;
     }
 }

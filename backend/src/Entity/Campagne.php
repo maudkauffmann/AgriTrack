@@ -98,4 +98,13 @@ class Campagne
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        $nom = $this->id_culture ? $this->id_culture->getNomCulture() : 'Sans nom';
+        $debut = $this->dateDeb ? $this->dateDeb->format('d/m/Y') : '?';
+        $fin = ($this->dateFin === null) ? "En cours" : $this->dateFin->format('d/m/Y');
+
+        return $nom . " (du " . $debut . " au " . $fin . ")";
+    }
 }

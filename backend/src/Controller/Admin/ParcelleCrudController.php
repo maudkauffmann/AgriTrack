@@ -8,8 +8,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
@@ -53,6 +55,15 @@ class ParcelleCrudController extends AbstractCrudController
             NumberField::new('superficieParc', 'Superficie (ha)'),
             AssociationField::new('id_plantation', 'Plantation liée')
                 ->setRequired(true),
+            IntegerField::new('nbCampagnes', 'Nombre Total Campagnes')
+                ->onlyOnIndex(),
+
+            TextField::new('culturesActuelles', 'Cultures en cours')
+                ->onlyOnIndex()
+                ->setHelp('Basé sur les dates de début et de fin des campagnes'),
+
+            ArrayField::new('campagnes', 'Historique des cultures')
+                ->onlyOnDetail(),
         ];
     }
 }
