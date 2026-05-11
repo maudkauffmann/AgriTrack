@@ -11,13 +11,13 @@ class Ouvrier
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::BIGINT)]
+    #[ORM\Column(name:"id_ouvrier", type: Types::BIGINT)]
     private ?string $id_ouvrier = null;
 
-    #[ORM\Column(length: 30)]
+    #[ORM\Column(name:"nomOuvrier", length: 30)]
     private ?string $nomOuvrier = null;
 
-    #[ORM\Column(type: Types::BIGINT)]
+    #[ORM\Column(name:"telOuvrier", type: Types::BIGINT)]
     private ?string $telOuvrier = null;
 
     public function getId(): ?string
@@ -30,6 +30,11 @@ class Ouvrier
         $this->id_ouvrier = $id_ouvrier;
 
         return $this;
+    }
+
+    public function getIdParcelle(): ?int
+    {
+        return $this->id_ouvrier;
     }
 
     public function getNomOuvrier(): ?string
