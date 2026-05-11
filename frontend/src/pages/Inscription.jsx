@@ -40,6 +40,9 @@ const Inscription = () => {
                 <button onClick={() => navigate('/')} style={styles.linkBtn}>
                     Déjà inscrit ? Se connecter
                 </button>
+                <button onClick={() => navigate('/')} style={styles.linkBtn}>
+                    Bouton test
+                </button>
             </div>
         </div>
     );
