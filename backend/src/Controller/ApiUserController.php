@@ -17,6 +17,7 @@ class ApiUserController extends AbstractController
     #[Route('/user/add', name: 'user_add', methods: ['POST'])]
     public function add(Request $request, UserPasswordHasherInterface $hasher, EntityManagerInterface $em): JsonResponse
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $data = json_decode($request->getContent(), true);
         if (!$data) {
             return new JsonResponse(['message' => 'Données JSON invalides'], 400);

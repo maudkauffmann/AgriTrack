@@ -20,6 +20,10 @@ class Ouvrier
     #[ORM\Column(name:"telOuvrier", type: Types::BIGINT)]
     private ?string $telOuvrier = null;
 
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
+    #[ORM\JoinColumn(name: "id_utilisateur", referencedColumnName: "id_utilisateur", nullable: true)]
+    private ?Utilisateur $id_utilisateur = null;
+
     public function getId(): ?string
     {
         return $this->id_ouvrier;
@@ -32,7 +36,7 @@ class Ouvrier
         return $this;
     }
 
-    public function getIdParcelle(): ?int
+    public function getIdOuvrier(): ?string
     {
         return $this->id_ouvrier;
     }
@@ -59,5 +63,21 @@ class Ouvrier
         $this->telOuvrier = $telOuvrier;
 
         return $this;
+    }
+
+    public function getIdUtilisateur(): ?Utilisateur
+    {
+        return $this->id_utilisateur;
+    }
+
+    public function setIdUtilisateur(?Utilisateur $id_utilisateur): static
+    {
+        $this->id_utilisateur = $id_utilisateur;
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->nomOuvrier ?? 'Ouvrier sans nom';
     }
 }

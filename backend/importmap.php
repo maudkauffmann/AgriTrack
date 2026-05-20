@@ -25,4 +25,28 @@ return [
     '@hotwired/turbo' => [
         'version' => '7.3.0',
     ],
+    'react' => [
+        'version' => '19.2.6',
+    ],
+    'react-dom' => [
+        'version' => '19.2.6',
+    ],
+    'react-router-dom' => [
+        'version' => '7.15.1',
+    ],
+    'react-router/dom' => [
+        'version' => '7.15.1',
+    ],
+    'react-router' => [
+        'version' => '7.15.1',
+    ],
+    'cookie' => [
+        'version' => '1.1.1',
+    ],
+    'set-cookie-parser' => [
+        'version' => '2.7.2',
+    ],
+    'axios' => [
+        'version' => '1.16.1',
+    ],
 ];

@@ -114,5 +114,9 @@ class RoleUtilisateur
         $this->creationCampagne = $creationCampagne;
     }
 
+    public function __toString(): string
+    {
+        return $this->nomRoleUser ?? 'Rôle sans nom';
+    }
 
 }

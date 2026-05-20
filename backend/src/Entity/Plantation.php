@@ -5,13 +5,14 @@ namespace App\Entity;
 use App\Repository\PlantationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: PlantationRepository::class)]
 class Plantation
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: "IDENTITY")]
     #[ORM\Column(name: "id_plantation", type: Types::BIGINT)]
+    #[Groups(['plantation:read'])]
     private ?string $id_plantation = null;
 
     #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
@@ -19,18 +20,23 @@ class Plantation
     private ?Utilisateur $id_utilisateur = null;
 
     #[ORM\Column(name: "nomPlantation", length: 30)]
+    #[Groups(['plantation:read'])]
     private ?string $nomPlantation = null;
 
     #[ORM\Column(type: Types::FLOAT)]
+    #[Groups(['plantation:read'])]
     private ?float $longitude = null;
 
     #[ORM\Column(type: Types::FLOAT)]
+    #[Groups(['plantation:read'])]
     private ?float $latitude= null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['plantation:read'])]
     private ?string $ville= null;
 
     #[ORM\Column(length: 300)]
+    #[Groups(['plantation:read'])]
     private ?string $indications= null;
 
     public function getLongitude(): ?float
@@ -73,12 +79,13 @@ class Plantation
         $this->indications = $indications;
     }
 
+    #[Groups(['plantation:read'])]
     public function getId(): ?string
     {
         return $this->id_plantation;
     }
 
-    public function getIdPlantation(): ?int
+    public function getIdPlantation(): ?string
     {
         return $this->id_plantation;
     }

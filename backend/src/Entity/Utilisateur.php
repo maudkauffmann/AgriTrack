@@ -55,6 +55,11 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id_utilisateur;
     }
 
+    public function setIdUtilisateur(?string $id): void
+    {
+        $this->id_utilisateur = $id;
+    }
+
     public function getNomUtilisateur(): ?string
     {
         return $this->nomUtilisateur;

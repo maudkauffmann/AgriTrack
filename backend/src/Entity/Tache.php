@@ -11,10 +11,10 @@ class Tache
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::BIGINT)]
+    #[ORM\Column(name: "id_tache", type: Types::BIGINT)]
     private ?string $id_tache = null;
 
-    #[ORM\Column(length: 30)]
+    #[ORM\Column(name: "nomTache", length: 30)]
     private ?string $nomTache = null;
 
     public function getId(): ?string
@@ -27,6 +27,11 @@ class Tache
         $this->id_tache = $id_tache;
 
         return $this;
+    }
+
+    public function getIdTache(): ?string
+    {
+        return $this->id_tache;
     }
 
     public function getNomTache(): ?string

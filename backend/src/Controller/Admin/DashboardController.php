@@ -8,6 +8,9 @@ use App\Controller\Admin\ParcelleCrudController;
 use App\Controller\Admin\OuvrierCrudController;
 use App\Controller\Admin\RealiserCrudController;
 use App\Entity\Culture;
+use App\Entity\RoleUtilisateur;
+use App\Entity\Utilisateur;
+use App\Repository\TacheRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -42,7 +45,11 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkTo(CampagneCrudController::class, 'Campagnes', 'fas fa-calendar-alt');
         yield MenuItem::linkTo(CultureCrudController::class, 'Cultures', 'fas fa-calendar-alt');
         yield MenuItem::section('Personnel & Tâches');
+        if ($this->isGranted('ROLE_ADMIN')) {
+            yield MenuItem::linkTo(UtilisateurCrudController::class, 'Utilisateurs', 'fa fa-user-gear');
+            yield MenuItem::linkTo(RoleUtilisateurCrudController::class, 'Rôles', 'fa fa-tags');
+        }
         yield MenuItem::linkTo(OuvrierCrudController::class, 'Ouvriers', 'fas fa-users');
-        yield MenuItem::linkTo(RealiserCrudController::class, 'Suivi Travaux', 'fas fa-check-circle');
+        yield MenuItem::linkTo(TacheCrudController::class, 'Taches', 'fas fa-folder');
     }
 }

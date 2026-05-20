@@ -49,3 +49,7 @@ security:
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY } # Sécurise tout le reste de l'API
         - { path: ^/admin,     roles: ROLE_ADMIN }
         - { path: ^/login,     roles: PUBLIC_ACCESS }
+
+    role_hierarchy:
+        ROLE_SUPERVISEUR: ROLE_USER
+        ROLE_ADMIN: ROLE_SUPERVISEUR
