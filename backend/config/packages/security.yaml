@@ -15,7 +15,7 @@ security:
 
         login:
             pattern: ^/api/login
-            stateless: false
+            stateless: true
             context: shared_auth # <--- Partage l'authentification avec 'main'
             json_login:
                 check_path: /api/login
@@ -33,7 +33,6 @@ security:
         # firewall pour EasyAdmin
         main:
             lazy: true
-            context: shared_auth # <--- Doit être identique à celui du dessus
             provider: app_user_provider
             entry_point: form_login
             form_login:
@@ -49,6 +48,10 @@ security:
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY } # Sécurise tout le reste de l'API
         - { path: ^/admin,     roles: ROLE_ADMIN }
         - { path: ^/login,     roles: PUBLIC_ACCESS }
+        - { path: ^/api/plantations, roles: IS_AUTHENTICATED_FULLY } # Ou ROLE_USER selon ta configuration
+        - { path: ^/api/parcelles, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/taches, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/ouvriers, roles: IS_AUTHENTICATED_FULLY }
 
     role_hierarchy:
         ROLE_SUPERVISEUR: ROLE_USER

@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import DetailsParcelle from './DetailsParcelle.jsx';
 
+/**
+ * @typedef {Object} Parcelle
+ * @property {string} id
+ * @property {string} nom_parcelle
+ * @property {float} superficieParc
+ */
+
 const GestionParcelles = ({ plantation, onBack }) => {
     const [parcelles, setParcelles] = useState([]);
     const [selectedParcelle, setSelectedParcelle] = useState(() => {
@@ -32,6 +39,10 @@ const GestionParcelles = ({ plantation, onBack }) => {
 
                 if (response.ok) {
                     const data = await response.json();
+
+                    console.log("DONNÉES RECUES DE SYMFONY :", data);
+                    const rawList = Array.isArray(data) ? data : (data['hydra:member'] || []);
+
                     setParcelles(Array.isArray(data) ? data : []);
                 } else {
                     setError("Impossible de charger les parcelles de cette plantation.");
@@ -62,21 +73,21 @@ const GestionParcelles = ({ plantation, onBack }) => {
             <button onClick={onBack} className="btn-back">← Retour aux plantations</button>
             <h2>Parcelles de : <span className="highlight-text">{plantation?.nomPlantation}</span></h2>
             <p className="subtitle-info"><i>Cliquez sur une parcelle pour voir ses détails et ses campagnes</i></p>
-
             <div className="parcelles-grid">
                 {loading ? (
                     <div className="loading-message">Chargement des parcelles...</div>
                 ) : error ? (
                     <div className="error-message">⚠️ {error}</div>
                 ) : parcelles.length > 0 ? (
-                    parcelles.map(parcelle => (
+                    parcelles.map((parcelle) => (
                         <div
                             key={parcelle.id}
                             onClick={() => handleSelectParcelle(parcelle)}
                             className="parcelle-card"
                         >
-                            🌾 <strong>{parcelle?.nomParcelle}</strong>
-                            <span className="parcelle-surface">{parcelle?.superficieParc} ha</span>
+                            🌾 <strong>{parcelle.nomParcelle}</strong>
+                            <p>Le nom de la parcelle est {parcelle.id}</p>
+                            <span className="parcelle-surface">{parcelle.superficieParc} ha</span>
                         </div>
                     ))
                 ) : (
